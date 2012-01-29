@@ -18,6 +18,15 @@
 %endif
 %define		system_compiler		1
 %define		branch			4.7
+%define		alternatives		/usr/sbin/update-alternatives
+%define		remove_alternatives	0
+%define		obsolete_devmajor	0
+%if %mdkversion <= 201200
+  %if %{system_compiler}
+    %define	remove_alternatives	1
+    %define	obsolete_devmajor	1
+  %endif
+%endif
 %define		gccdir			%{_libdir}/gcc/%{_target_platform}/%{version}
 %define		multigccdir		%{_libdir}/gcc/%{_target_platform}/%{version}/32
 %define		multilibdir		%{_prefix}/lib
@@ -173,6 +182,10 @@ Source6:	libjava-classes-%{version}-%{release}.tar.bz2
 Requires:	gcc-cpp >= %{version}-%{release}
 Requires:	libgcc >= %{version}-%{release}
 Requires:	libgomp >= %{version}-%{release}
+Obsoletes:	manbo-mandriva-files-gcc
+Obsoletes:	manbo-mandriva-files-gcc4.4
+# versioned and non versioned files
+Conflicts:	manbo-mandriva-files-gcc4.2
 %endif
 %ifarch armv7l armv7hl
 # find-provides fail to provide devel(libgcc_s) because it is a linker script
@@ -207,6 +220,9 @@ BuildRequires:	pwl-devel >= 0.11
 BuildRequires:	ppl_c-devel >= 0.11
 BuildRequires:	cloog-ppl-devel >= 0.16.1
 %endif
+%if %{remove_alternatives}
+Requires(pre):	update-alternatives
+%endif
 Obsoletes:	gcc-doc
 
 Patch0:		gcc-4.7.0-uclibc-ldso-path.patch
@@ -216,6 +232,11 @@ Patch3:		gcc-4.7.0-linux32.patch
 
 %description
 The gcc package contains the GNU Compiler Collection version %{branch}.
+
+%if %{remove_alternatives}
+%pre
+if [ -f %{_bindir}/gcc ]; then %{alternatives} --remove-all gcc; fi
+%endif
 
 %if %{system_compiler}
 %post
@@ -373,6 +394,9 @@ Summary:	The C Preprocessor
 Group:		Development/C
 Provides:	cpp = %{version}-%{release}
 Requires:	%{name} = %{version}-%{release}
+%if %{remove_alternatives}
+Requires(pre):	update-alternatives
+%endif
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
 
@@ -397,6 +421,11 @@ The C preprocessor provides four separate functionalities:
 * Line control. If you use a program to combine or rearrange source files
   into an intermediate file which is then compiled, you can use line
   control to inform the compiler about where each source line originated.
+
+%if %{remove_alternatives}
+%pre		cpp
+if [ -f %{_bindir}/cpp ]; then %{alternatives} --remove-all cpp; fi
+%endif
 
 %post		cpp
   %_install_info cpp.info
@@ -426,12 +455,25 @@ Group:		Development/C++
 Requires:	%{name} = %{version}-%{release}
 %if %{system_compiler}
 Requires:	%{libstdcxx_devel} = %{version}
+Obsoletes:	manbo-mandriva-files-g++
+Obsoletes:	manbo-mandriva-files-g++4.4
+Obsoletes:	manbo-mandriva-files-gcc-c++
+Obsoletes:	manbo-mandriva-files-gcc-c++4.2
+%endif
+%if %{remove_alternatives}
+Requires(pre):	update-alternatives
 %endif
 
 %description	c++
 This package adds C++ support to the GNU Compiler Collection.
 It includes support for most of the current C++ specification,
 including templates and exception handling.
+
+%if %{remove_alternatives}
+%pre		c++
+if [ -f %{_bindir}/c++ ]; then %{alternatives} --remove-all c++; fi
+if [ -f %{_bindir}/g++ ]; then %{alternatives} --remove-all g++; fi
+%endif
 
 %files		c++
 %if %{system_compiler}
@@ -466,9 +508,6 @@ GCC Standard C++ Library.
 %if %{system_compiler}
 %{_localedir}/*/LC_MESSAGES/libstdc++.mo
 %endif
-%if %{build_doc}
-%doc %{_docdir}/libstdc++
-%endif
 
 #-----------------------------------------------------------------------
 %if %{build_multilib}
@@ -495,6 +534,10 @@ Requires:	%{multilibstdcxx} = %{version}-%{release}
 %endif
 Provides:	libstdc++-devel = %{version}-%{release}
 Provides:	stdc++-devel = %{version}-%{release}
+%if %{obsolete_devmajor}
+Obsoletes:	libstdc++4.5-devel
+Obsoletes:	libstdc++6-devel
+%endif
 
 %description	-n %{libstdcxx_devel}
 This is the GNU implementation of the standard C++ libraries.  This
@@ -510,6 +553,9 @@ development. This includes rewritten implementation of STL.
 %{_datadir}/gdb/auto-load%{multilibdir}/libstdc++.*.py
 %endif
 %{py_puresitedir}/libstdcxx
+%if %{build_doc}
+%doc %{_docdir}/libstdc++
+%endif
 
 #-----------------------------------------------------------------------
 %package	-n %{libstdcxx_static_devel}
@@ -518,6 +564,10 @@ Group:		Development/C++
 Requires:	%{libstdcxx_devel} = %{version}-%{release}
 Provides:	libstdc++-static-devel = %{version}-%{release}
 Provides:	stdc++-static-devel = %{version}-%{release}
+%if %{obsolete_devmajor}
+Obsoletes:	libstdc++4.5-static-devel
+Obsoletes:	libstdc++%{stdcxx_major}-static-devel
+%endif
 
 %description	-n %{libstdcxx_static_devel}
 Static libraries for the GNU standard C++ library.
@@ -671,6 +721,10 @@ Requires:	%{name} = %{version}-%{release}
 Requires:	%{libgfortran_devel} = %{version}-%{release}
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
+Obsoletes:	manbo-mandriva-files-gfortran
+Obsoletes:	manbo-mandriva-files-gfortran4.4
+Obsoletes:	manbo-mandriva-files-gcc-gfortran
+Obsoletes:	manbo-mandriva-files-gcc-gfortran4.2
 
 %description	gfortran
 The gcc-gfortran package provides support for compiling Fortran
@@ -969,7 +1023,7 @@ GNU Transactional Memory library.
 %{multilibdir}/libitm.spec
 %endif
 %{_infodir}/libitm.info*
-%if %{build_doc}
+%if %{build_pdf}
 %doc %{_docdir}/libitm
 %endif
 
@@ -1010,6 +1064,10 @@ BuildRequires:	eclipse-ecj
 BuildRequires:	jpackage-utils
 BuildRequires:	unzip
 BuildRequires:	zip
+Obsoletes:	manbo-mandriva-files-java
+Obsoletes:	manbo-mandriva-files-java4.4
+Obsoletes:	manbo-mandriva-files-gcc-java
+Obsoletes:	manbo-mandriva-files-gcc-java4.2
 
 %description	java
 This package adds support for compiling Java(tm) programs and
@@ -1058,6 +1116,9 @@ Provides:	libgcj_bc%{gcj_bc_major} = %{version}-%{release}
 Provides:	libgcj%{gcj_major}-base = %{version}-%{release}
 Provides:	%{libgcj}-base = %{version}-%{release}
 Obsoletes:	gcc-libgcj
+Obsoletes:	libgcj4.5 < %{version}-%{release}
+Obsoletes:	gcj4.5-tools
+Obsoletes:	gcj-tools <= 4.5.2
 Obsoletes:	%{mklibname gcj 11}
 Obsoletes:	%{mklibname gcj 11}-base
 %endif
@@ -1776,6 +1837,10 @@ OPT_FLAGS="-O2 -g3"
 CPPFLAGS=
 LDFLAGS=
 
+# FIXME debugedit
+[ ! -z "$TMP" ] && export TMP=`echo $TMP | sed -e 's|/$||'`
+[ ! -z "x$TMPDIR" ] && export TMPDIR=`echo $TMPDIR | sed -e 's|/$||'`
+
 LANGUAGES=c
 %if %{build_ada}
     LANGUAGES="$LANGUAGES,ada"
@@ -1909,7 +1974,7 @@ GCJFLAGS="$OPT_FLAGS"						\
 %make BOOT_CFLAGS="$OPT_FLAGS" $BOOTSTRAP
 
 %if %{build_pdf}
-%make pdf || :
+    %make pdf || :
 %endif
 
 %if %{build_doc}
