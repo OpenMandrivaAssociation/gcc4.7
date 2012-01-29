@@ -1058,9 +1058,6 @@ Provides:	libgcj_bc%{gcj_bc_major} = %{version}-%{release}
 Provides:	libgcj%{gcj_major}-base = %{version}-%{release}
 Provides:	%{libgcj}-base = %{version}-%{release}
 Obsoletes:	gcc-libgcj
-Obsoletes:	libgcj4.5 < %{version}-%{release}
-Obsoletes:	gcj4.5-tools
-Obsoletes:	gcj-tools <= 4.5.2
 Obsoletes:	%{mklibname gcj 11}
 Obsoletes:	%{mklibname gcj 11}-base
 %endif
@@ -1931,7 +1928,7 @@ find libjava -name \*.h -type f |					\
 find libjava -name \*.class -type f >> libjava-classes.list
 find libjava/testsuite -name \*.jar -type f >> libjava-classes.list
 tar cf - -T libjava-classes.list | bzip2 -9				\
-    > %{_sourcedir}/libjava-classes-%{version}-%{release}.tar.bz2
+    > %{make_rpmlint_happy_sourcedir}/libjava-classes-%{version}-%{release}.tar.bz2
 %endif
 
 #-----------------------------------------------------------------------
