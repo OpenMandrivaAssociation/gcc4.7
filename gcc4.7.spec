@@ -9,27 +9,15 @@
 # avoid build failure due to configure built with different autoconf version
 %define		_disable_libtoolize		1
 
-# awt qt not functional (?)
-%define		with_qt				0
-
 #-----------------------------------------------------------------------
 %define		official		0
 %if %{official}
   %define	snapshot		%{nil}
 %else
-  %define	snapshot		-20120120
+  %define	snapshot		-20120128
 %endif
 %define		system_compiler		1
-%define		branch			4.6
-%define		alternatives		/usr/sbin/update-alternatives
-%define		remove_alternatives	0
-%define		obsolete_devmajor	0
-%if %mdkversion <= 201200
-  %if %{system_compiler}
-    %define	remove_alternatives	1
-    %define	obsolete_devmajor	1
-  %endif
-%endif
+%define		branch			4.7
 %define		gccdir			%{_libdir}/gcc/%{_target_platform}/%{version}
 %define		multigccdir		%{_libdir}/gcc/%{_target_platform}/%{version}/32
 %define		multilibdir		%{_prefix}/lib
@@ -48,7 +36,7 @@
 %define		libstdcxx_devel		%mklibname -d stdc++
 %define		libstdcxx_static_devel	%mklibname -d -s stdc++
 %define		multilibstdcxx		libstdc++%{stdcxx_major}
-%define		gcj_major		12
+%define		gcj_major		13
 %define		libgcj			%mklibname gcj %{gcj_major}
 %define		libgcj_devel		%mklibname -d gcj
 %define		libgcj_static_devel	%mklibname -d -s gcj
@@ -80,12 +68,17 @@
 %define		libgomp_devel		%mklibname -d gomp
 %define		libgomp_static_devel	%mklibname -d -s gomp
 %define		multilibgomp		libgomp%{gomp_major}
+%define		itm_major		1
+%define		libitm			%mklibname itm %{itm_major}
+%define		libitm_devel		%mklibname -d itm
+%define		libitm_static_devel	%mklibname -d -s itm
+%define		multilibitm		libitm%{itm_major}
 %define		mudflap_major		0
 %define		libmudflap		%mklibname mudflap %{mudflap_major}
 %define		libmudflap_devel	%mklibname -d mudflap
 %define		libmudflap_static_devel %mklibname -d -s mudflap
 %define		multilibmudflap		libmudflap%{mudflap_major}
-%define		objc_major		3
+%define		objc_major		4
 %define		libobjc			%mklibname objc %{objc_major}
 %define		libobjc_devel		%mklibname -d objc
 %define		libobjc_static_devel	%mklibname -d -s objc
@@ -106,6 +99,7 @@
 %define		build_check		0
 %define		build_multilib		0
 %define		build_go		0
+%define		build_itm		0
 %define		build_lto		1
 %define		build_objc		0
 %define		build_objcxx		0
@@ -135,6 +129,7 @@
   %define	build_go		%{system_compiler}
 %endif
 %ifarch %{ix86} x86_64 %{arm}
+  %define	build_itm		%{system_compiler}
   %define	build_objc		%{system_compiler}
   %define	build_objcxx		%{system_compiler}
 %endif
@@ -153,8 +148,8 @@
 
 #-----------------------------------------------------------------------
 Name:		%{name}
-Version:	4.6.2
-Release:	11
+Version:	4.7.0
+Release:	0.1
 Summary:	GNU Compiler Collection
 License:	GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD
 Group:		Development/C
@@ -178,10 +173,6 @@ Source6:	libjava-classes-%{version}-%{release}.tar.bz2
 Requires:	gcc-cpp >= %{version}-%{release}
 Requires:	libgcc >= %{version}-%{release}
 Requires:	libgomp >= %{version}-%{release}
-Obsoletes:	manbo-mandriva-files-gcc
-Obsoletes:	manbo-mandriva-files-gcc4.4
-# versioned and non versioned files
-Conflicts:	manbo-mandriva-files-gcc4.2
 %endif
 %ifarch armv7l armv7hl
 # find-provides fail to provide devel(libgcc_s) because it is a linker script
@@ -216,29 +207,15 @@ BuildRequires:	pwl-devel >= 0.11
 BuildRequires:	ppl_c-devel >= 0.11
 BuildRequires:	cloog-ppl-devel >= 0.16.1
 %endif
-%if %{remove_alternatives}
-Requires(pre):	update-alternatives
-%endif
 Obsoletes:	gcc-doc
 
-Patch0:		gcc-4.6.0-uclibc-ldso-path.patch
-Patch1:		gcc-4.6.0-java-nomulti.patch
-Patch2:		gcc-4.6.0-make-pdf.patch
-Patch3:		gcc-4.6.0-linux32.patch
-# http://gcc.gnu.org/viewcvs?view=revision&revision=176741
-Patch4:		gcc-4.6-plugin-installation.patch
-
-# https://qa.mandriva.com/show_bug.cgi?id=64082
-# https://bugzilla.redhat.com/show_bug.cgi?id=713800
-Patch5:		gcc-4.6.1-C-comment.patch
+Patch0:		gcc-4.7.0-uclibc-ldso-path.patch
+Patch1:		gcc-4.7.0-java-nomulti.patch
+Patch2:		gcc-4.7.0-make-pdf.patch
+Patch3:		gcc-4.7.0-linux32.patch
 
 %description
 The gcc package contains the GNU Compiler Collection version %{branch}.
-
-%if %{remove_alternatives}
-%pre
-if [ -f %{_bindir}/gcc ]; then %{alternatives} --remove-all gcc; fi
-%endif
 
 %if %{system_compiler}
 %post
@@ -258,8 +235,14 @@ if [ -f %{_bindir}/gcc ]; then %{alternatives} --remove-all gcc; fi
 %{_bindir}/c89
 %{_bindir}/c99
 %{_bindir}/gcc
+%{_bindir}/gcc-ar
+%{_bindir}/gcc-nm
+%{_bindir}/gcc-ranlib
 %{_bindir}/gcov
 %{_bindir}/%{_target_platform}-gcc
+%{_bindir}/%{_target_platform}-gcc-ar
+%{_bindir}/%{_target_platform}-gcc-nm
+%{_bindir}/%{_target_platform}-gcc-ranlib
 %{_mandir}/man1/gcc.1*
 %{_mandir}/man1/gcov.1*
 %{_mandir}/man7/*
@@ -273,7 +256,13 @@ if [ -f %{_bindir}/gcc ]; then %{alternatives} --remove-all gcc; fi
   %endif
 %endif
 %{_bindir}/gcc-%{version}
+%{_bindir}/gcc-ar-%{version}
+%{_bindir}/gcc-nm-%{version}
+%{_bindir}/gcc-ranlib-%{version}
 %{_bindir}/%{_target_platform}-gcc-%{version}
+%{_bindir}/%{_target_platform}-gcc-ar-%{version}
+%{_bindir}/%{_target_platform}-gcc-nm-%{version}
+%{_bindir}/%{_target_platform}-gcc-ranlib-%{version}
 %dir %{gccdir}
 %{gccdir}/cc1
 %{gccdir}/collect2
@@ -384,9 +373,6 @@ Summary:	The C Preprocessor
 Group:		Development/C
 Provides:	cpp = %{version}-%{release}
 Requires:	%{name} = %{version}-%{release}
-%if %{remove_alternatives}
-Requires(pre):	update-alternatives
-%endif
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
 
@@ -411,11 +397,6 @@ The C preprocessor provides four separate functionalities:
 * Line control. If you use a program to combine or rearrange source files
   into an intermediate file which is then compiled, you can use line
   control to inform the compiler about where each source line originated.
-
-%if %{remove_alternatives}
-%pre		cpp
-if [ -f %{_bindir}/cpp ]; then %{alternatives} --remove-all cpp; fi
-%endif
 
 %post		cpp
   %_install_info cpp.info
@@ -445,25 +426,12 @@ Group:		Development/C++
 Requires:	%{name} = %{version}-%{release}
 %if %{system_compiler}
 Requires:	%{libstdcxx_devel} = %{version}
-Obsoletes:	manbo-mandriva-files-g++
-Obsoletes:	manbo-mandriva-files-g++4.4
-Obsoletes:	manbo-mandriva-files-gcc-c++
-Obsoletes:	manbo-mandriva-files-gcc-c++4.2
-%endif
-%if %{remove_alternatives}
-Requires(pre):	update-alternatives
 %endif
 
 %description	c++
 This package adds C++ support to the GNU Compiler Collection.
 It includes support for most of the current C++ specification,
 including templates and exception handling.
-
-%if %{remove_alternatives}
-%pre		c++
-if [ -f %{_bindir}/c++ ]; then %{alternatives} --remove-all c++; fi
-if [ -f %{_bindir}/g++ ]; then %{alternatives} --remove-all g++; fi
-%endif
 
 %files		c++
 %if %{system_compiler}
@@ -498,6 +466,9 @@ GCC Standard C++ Library.
 %if %{system_compiler}
 %{_localedir}/*/LC_MESSAGES/libstdc++.mo
 %endif
+%if %{build_doc}
+%doc %{_docdir}/libstdc++
+%endif
 
 #-----------------------------------------------------------------------
 %if %{build_multilib}
@@ -524,10 +495,6 @@ Requires:	%{multilibstdcxx} = %{version}-%{release}
 %endif
 Provides:	libstdc++-devel = %{version}-%{release}
 Provides:	stdc++-devel = %{version}-%{release}
-%if %{obsolete_devmajor}
-Obsoletes:	libstdc++4.5-devel
-Obsoletes:	libstdc++6-devel
-%endif
 
 %description	-n %{libstdcxx_devel}
 This is the GNU implementation of the standard C++ libraries.  This
@@ -543,9 +510,6 @@ development. This includes rewritten implementation of STL.
 %{_datadir}/gdb/auto-load%{multilibdir}/libstdc++.*.py
 %endif
 %{py_puresitedir}/libstdcxx
-%if %{build_doc}
-%doc %{_docdir}/libstdc++
-%endif
 
 #-----------------------------------------------------------------------
 %package	-n %{libstdcxx_static_devel}
@@ -554,20 +518,24 @@ Group:		Development/C++
 Requires:	%{libstdcxx_devel} = %{version}-%{release}
 Provides:	libstdc++-static-devel = %{version}-%{release}
 Provides:	stdc++-static-devel = %{version}-%{release}
-%if %{obsolete_devmajor}
-Obsoletes:	libstdc++4.5-static-devel
-Obsoletes:	libstdc++%{stdcxx_major}-static-devel
-%endif
 
 %description	-n %{libstdcxx_static_devel}
 Static libraries for the GNU standard C++ library.
 
 %files		-n %{libstdcxx_static_devel}
+%{_libdir}/libc++11.a
+%{_libdir}/libc++11.la
+%{_libdir}/libc++98.a
+%{_libdir}/libc++98.la
 %{_libdir}/libstdc++.a
 %{_libdir}/libstdc++.la
 %{_libdir}/libsupc++.a
 %{_libdir}/libsupc++.la
 %if %{build_multilib}
+%{multilibdir}/libc++11.a
+%{multilibdir}/libc++11.la
+%{multilibdir}/libc++98.a
+%{multilibdir}/libc++98.la
 %{multilibdir}/libstdc++.a
 %{multilibdir}/libstdc++.la
 %{multilibdir}/libsupc++.a
@@ -703,10 +671,6 @@ Requires:	%{name} = %{version}-%{release}
 Requires:	%{libgfortran_devel} = %{version}-%{release}
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
-Obsoletes:	manbo-mandriva-files-gfortran
-Obsoletes:	manbo-mandriva-files-gfortran4.4
-Obsoletes:	manbo-mandriva-files-gcc-gfortran
-Obsoletes:	manbo-mandriva-files-gcc-gfortran4.2
 
 %description	gfortran
 The gcc-gfortran package provides support for compiling Fortran
@@ -727,9 +691,11 @@ programs with the GNU Compiler Collection.
 %{_mandir}/man1/gfortran.1*
 %{gccdir}/f951
 %{gccdir}/finclude
-%{gccdir}/libgfortranbegin.*
+%{gccdir}/libcaf_single.a
+%{gccdir}/libgfortranbegin.a
 %if %{build_multilib}
-%{multigccdir}/libgfortranbegin.*
+%{multigccdir}/libcaf_single.a
+%{multigccdir}/libgfortranbegin.a
 %endif
 %if %{build_doc}
 %doc %{_docdir}/gcc-gfortran
@@ -848,6 +814,7 @@ with the GNU Compiler Collection.
 
 %files		go
 %{_bindir}/gccgo
+%{_bindir}/%{_target_platform}-gccgo
 %dir %{_libdir}/go
 %if %{build_multilib}
 %dir %{multilibdir}/go
@@ -940,6 +907,95 @@ This package contains static Go libraries.
 %endif
 
 ########################################################################
+%if %{build_itm}
+#-----------------------------------------------------------------------
+%package	-n %{libitm}
+Summary:	The GNU Transactional Memory library
+Group:		System/Libraries
+Provides:	libitm = %{version}-%{release}
+
+%description	-n %{libitm}
+This package contains the GNU Transactional Memory library
+which is a GCC transactional memory support runtime library.
+
+%files		-n %{libitm}
+%{_libdir}/libitm.so.%{itm_major}
+%{_libdir}/libitm.so.%{itm_major}.*
+
+#-----------------------------------------------------------------------
+%if %{build_multilib}
+%package	-n %{multilibitm}
+Summary:	The GNU Transactional Memory library
+Group:		System/Libraries
+
+%description	-n %{multilibitm}
+This package contains the GNU Transactional Memory library
+which is a GCC transactional memory support runtime library.
+
+%files		-n %{multilibitm}
+%{multilibdir}/libitm.so.%{itm_major}
+%{multilibdir}/libitm.so.%{itm_major}.*
+%endif
+
+#-----------------------------------------------------------------------
+%package	-n %{libitm_devel}
+Summary:	The GNU Transactional Memory support
+Group:		Development/C
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{libitm} = %{version}-%{release}
+%if %{build_multilib}
+Requires:	%{multilibitm} = %{version}-%{release}
+%endif
+Provides:	libitm-devel = %{version}-%{release}
+Provides:	itm-devel = %{version}-%{release}
+Requires(post): /sbin/install-info
+Requires(preun): /sbin/install-info
+
+%description	-n %{libitm_devel}
+This package contains headers and support files for the
+GNU Transactional Memory library.
+
+%post		-n %{libitm_devel}
+  %_install_info libitm.info
+
+%preun		-n %{libitm_devel}
+  %_remove_install_info libitm.info
+
+%files		-n %{libitm_devel}
+%{_libdir}/libitm.so
+%{_libdir}/libitm.spec
+%if %{build_multilib}
+%{multilibdir}/libitm.so
+%{multilibdir}/libitm.spec
+%endif
+%{_infodir}/libitm.info*
+%if %{build_doc}
+%doc %{_docdir}/libitm
+%endif
+
+#-----------------------------------------------------------------------
+%package	-n %{libitm_static_devel}
+Summary:	The GNU Transactional Memory static library
+Group:		Development/C
+Requires:	%{libitm_devel} = %{version}-%{release}
+Provides:	libitm-static-devel = %{version}-%{release}
+Provides:	itm-static-devel = %{version}-%{release}
+
+%description	-n %{libitm_static_devel}
+This package contains GNU Transactional Memory static libraries.
+
+%files		-n %{libitm_static_devel}
+%{_libdir}/libitm.a
+%{_libdir}/libitm.la
+%if %{build_multilib}
+%{multilibdir}/libitm.a
+%{multilibdir}/libitm.la
+%endif
+#-----------------------------------------------------------------------
+# build itm
+%endif
+
+########################################################################
 %if %{build_java}
 #-----------------------------------------------------------------------
 %package	java
@@ -954,10 +1010,6 @@ BuildRequires:	eclipse-ecj
 BuildRequires:	jpackage-utils
 BuildRequires:	unzip
 BuildRequires:	zip
-Obsoletes:	manbo-mandriva-files-java
-Obsoletes:	manbo-mandriva-files-java4.4
-Obsoletes:	manbo-mandriva-files-gcc-java
-Obsoletes:	manbo-mandriva-files-gcc-java4.2
 
 %description	java
 This package adds support for compiling Java(tm) programs and
@@ -1024,9 +1076,6 @@ BuildRequires:	libart_lgpl-devel >= 2.1.0
 BuildRequires:	alsa-lib-devel
 BuildRequires:	libxtst-devel
 BuildRequires:	libxt-devel
-%if %{with_qt}
-BuildRequires:	qt4-devel
-%endif
 BuildRequires:	spec-helper >= 0.31.10
 
 %description	-n %{libgcj}
@@ -1080,9 +1129,9 @@ programs compiled using the Java compiler from GNU Compiler Collection (gcj).
 %{_mandir}/man1/rebuild-gcj-db.1*
 %{_infodir}/cp-tools.info*
 %{_javadir}/libgcj*.jar
-%dir %{_libdir}/gcj-%{version}-12
-%{_libdir}/gcj-%{version}-12/*.so
-%attr(0644,root,root) %verify(not md5 size mtime) %ghost %config(missingok,noreplace) %{_libdir}/gcj-%{version}-12/classmap.db
+%dir %{_libdir}/gcj-%{version}-13
+%{_libdir}/gcj-%{version}-13/*.so
+%attr(0644,root,root) %verify(not md5 size mtime) %ghost %config(missingok,noreplace) %{_libdir}/gcj-%{version}-13/classmap.db
 %{_libdir}/libgcj.so.%{gcj_major}
 %{_libdir}/libgcj.so.%{gcj_major}.*
 %{_libdir}/libgcj-tools.so.%{gcj_major}
@@ -1121,26 +1170,7 @@ package to compile your Java programs using the GCC Java compiler (gcj).
 %{_libdir}/libgcj*.spec
 %{_libdir}/libgcj*.so
 %{_libdir}/libgij.so
-
-#-----------------------------------------------------------------------
-%package	-n %{libgcj_static_devel}
-Summary:	Static Libraries for Java development using GCC
-Group:		Development/Other
-Requires:	%{libgcj_devel} = %{version}-%{release}
-Provides:	libgcj-static-devel = %{version}-%{release}
-Provides:	gcj-static-devel = %{version}-%{release}
-
-%description	-n %{libgcj_static_devel}
-Static Libraries for Java development using GCC.
-
-%files		-n %{libgcj_static_devel}
-%defattr(-,root,root)
-%{_libdir}/libgcj*.a
-%{_libdir}/libgcj*.la
-%{_libdir}/libgij.a
-%{_libdir}/libgij.la
-%{_libdir}/gcj-%{version}-12/*.a
-%{_libdir}/gcj-%{version}-12/*.la
+%{_libdir}/gcj-%{version}-13/*.la
 
 #-----------------------------------------------------------------------
 %package	-n libgcj%{gcj_major}-src
@@ -1316,9 +1346,6 @@ Requires:	%{multilibffi} = %{version}-%{release}
 %endif
 Provides:	libffi-devel = %{version}-%{release}
 Provides:	ffi-devel = %{version}-%{release}
-%if %{obsolete_devmajor}
-Obsoletes:	libffi4-devel < %{version}-%{release}
-%endif
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
 
@@ -1734,12 +1761,12 @@ to compile SSP support.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
 
+%if 0
 echo %{vendor} > gcc/DEV-PHASE
 %if !%{official}
-    sed -i -e 's/4\.6\.3/%{version}/' gcc/BASE-VER
+    sed -i -e 's/4\.7\.0/%{version}/' gcc/BASE-VER
+%endif
 %endif
 
 %if %{with java_bootstrap}
@@ -1748,17 +1775,9 @@ echo %{vendor} > gcc/DEV-PHASE
 
 #-----------------------------------------------------------------------
 %build
-OPT_FLAGS=`echo %{optflags} |					\
-	sed	-e 's/\(-Wp,\)\?-D_FORTIFY_SOURCE=[12]//g'	\
-		-e 's/-m\(31\|32\|64\)//g'			\
-		-e 's/-fstack-protector//g'			\
-		-e 's/--param=ssp-buffer-size=4//'		\
-		-e 's/-pipe//g'`
-OPT_FLAGS=`echo "$OPT_FLAGS" | sed -e 's/[[:blank:]]\+/ /g'`
-
-# FIXME debugedit
-[ ! -z "$TMP" ] && export TMP=`echo $TMP | sed -e 's|/$||'`
-[ ! -z "x$TMPDIR" ] && export TMPDIR=`echo $TMPDIR | sed -e 's|/$||'`
+OPT_FLAGS="-O2 -g3"
+CPPFLAGS=
+LDFLAGS=
 
 LANGUAGES=c
 %if %{build_ada}
@@ -1786,7 +1805,7 @@ LANGUAGES=c
     LANGUAGES="$LANGUAGES,obj-c++"
 %endif
 
-BOOTSTRAP=
+BOOTSTRAP=bootstrap
 %ifarch %{ix86} x86_64
   %if %{system_compiler}
 BOOSTRAP=profiledbootstrap
@@ -1806,11 +1825,7 @@ XCFLAGS="$OPT_FLAGS"						\
 	--disable-libjava-multilib				\
 	--with-java-home=%{_jvmdir}/java-1.5.0-gcj-1.5.0.0/jre	\
 	--with-ecj-jar=%{_datadir}/java/eclipse-ecj.jar		\
-%if %{with_qt}
-	--enable-java-awt=qt,gtk				\
-%else
 	--enable-java-awt=gtk					\
-%endif
 	--enable-gtk-cairo					\
 %endif
 %if !%{build_cloog}
@@ -1897,9 +1912,6 @@ GCJFLAGS="$OPT_FLAGS"						\
 %make BOOT_CFLAGS="$OPT_FLAGS" $BOOTSTRAP
 
 %if %{build_pdf}
-perl -pi -e "s|/mnt/share/src/gcc.svn-trunk/|$PWD/|;"		\
-    libstdc++-v3/doc/xml/manual/build_hacking.xml		\
-    libstdc++-v3/doc/html/manual/appendix_porting.html
 %make pdf || :
 %endif
 
@@ -1967,18 +1979,17 @@ pushd %{buildroot}%{_bindir}
 %else
     rm -f %{buildroot}%{_bindir}/cpp
 %endif
-    LANGUAGES="gcc g++ gcc gccgo gcj gfortran"
-    for lang in $LANGUAGES; do
-	if [ -f %{_target_platform}-$lang ]; then
-	    mv -f %{_target_platform}-$lang{,-%{version}}
-	    rm -f $lang
-	    ln -sf %{_target_platform}-$lang-%{version} $lang-%{version}
-	%if %{system_compiler}
-	    ln -sf %{_target_platform}-$lang-%{version} $lang
-	elif [ -f %{_target_platform}-$lang-%{version} ]; then
-	    ln -sf %{_target_platform}-$lang-%{version} %{_target_platform}-$lang
-	%endif
+    PROGRAMS="gcc g++ gccgo gcj gfortran gcc-ar gcc-nm gcc-ranlib"
+    for prog in $PROGRAMS; do
+	if [ -f %{_target_platform}-$prog ]; then
+	    mv -f %{_target_platform}-$prog{,-%{version}}
 	fi
+	rm -f $prog
+	ln -sf %{_target_platform}-$prog-%{version} $prog-%{version}
+	%if %{system_compiler}
+	    ln -sf %{_target_platform}-$prog-%{version} $prog
+	    ln -sf %{_target_platform}-$prog-%{version} %{_target_platform}-$prog
+	%endif
     done
 %if %{build_cxx}
     rm -f c++ %{_target_platform}-c++{,-%{version}}
@@ -1986,7 +1997,6 @@ pushd %{buildroot}%{_bindir}
     %if %{system_compiler}
 	ln -sf %{_target_platform}-g++-%{version} c++
 	ln -sf %{_target_platform}-g++-%{version} %{_target_platform}-c++
-	ln -sf %{_target_platform}-g++-%{version} %{_target_platform}-g++
     %endif
     mkdir -p %{buildroot}%{_datadir}/gdb/auto-load%{_libdir}
     mv -f %{buildroot}%{_libdir}/libstdc++.so.*.py		\
@@ -2001,11 +2011,7 @@ pushd %{buildroot}%{_bindir}
 	    %{buildroot}%{_datadir}/gdb/auto-load%{multilibdir}/libstdc++.*.py
     %endif
 %endif
-%if %{build_fortran}
-    ln -sf %{_target_platform}-gfortran-%{version} %{_target_platform}-gfortran
-%endif
 %if %{build_java}
-    ln -sf %{_target_platform}-gcj-%{version} %{_target_platform}-gcj
     ln -sf gcjh %{_target_platform}-gcjh
 %endif
 popd
@@ -2122,6 +2128,9 @@ rm -f %{buildroot}%{multilibdir}/libiberty.a
 	%endif
 	%if %{build_quadmath}
 	install -m 0644 -D libquadmath/libquadmath.pdf %{buildroot}%{_docdir}/libquadmath/libquadmath.pdf
+	%endif
+	%if %{build_itm}
+	install -m 0644 -D libitm/libitm.pdf %{buildroot}%{_docdir}/libitm/libitm.pdf
 	%endif
 	%if %{build_java}
 	install -m 0644 -D libjava/classpath/doc/cp-tools.pdf %{buildroot}%{_docdir}/libjava/cp-tools.pdf
