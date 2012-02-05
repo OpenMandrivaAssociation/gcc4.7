@@ -14,7 +14,7 @@
 %if %{official}
   %define	snapshot		%{nil}
 %else
-  %define	snapshot		-20120128
+  %define	snapshot		-20120204
 %endif
 %define		system_compiler		1
 %define		branch			4.7
@@ -158,7 +158,7 @@
 #-----------------------------------------------------------------------
 Name:		%{name}
 Version:	4.7.0
-Release:	0.1
+Release:	0.2
 Summary:	GNU Compiler Collection
 License:	GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD
 Group:		Development/C
@@ -573,19 +573,11 @@ Obsoletes:	libstdc++%{stdcxx_major}-static-devel
 Static libraries for the GNU standard C++ library.
 
 %files		-n %{libstdcxx_static_devel}
-%{_libdir}/libc++11.a
-%{_libdir}/libc++11.la
-%{_libdir}/libc++98.a
-%{_libdir}/libc++98.la
 %{_libdir}/libstdc++.a
 %{_libdir}/libstdc++.la
 %{_libdir}/libsupc++.a
 %{_libdir}/libsupc++.la
 %if %{build_multilib}
-%{multilibdir}/libc++11.a
-%{multilibdir}/libc++11.la
-%{multilibdir}/libc++98.a
-%{multilibdir}/libc++98.la
 %{multilibdir}/libstdc++.a
 %{multilibdir}/libstdc++.la
 %{multilibdir}/libsupc++.a
@@ -1833,9 +1825,17 @@ echo %{vendor} > gcc/DEV-PHASE
 
 #-----------------------------------------------------------------------
 %build
-OPT_FLAGS="-O2 -g3"
-CPPFLAGS=
-LDFLAGS=
+OPT_FLAGS=`echo %{optflags} |					\
+	sed	-e 's/\(-Wp,\)\?-D_FORTIFY_SOURCE=[12]//g'	\
+		-e 's/-m\(31\|32\|64\)//g'			\
+		-e 's/-fstack-protector//g'			\
+		-e 's/--param=ssp-buffer-size=4//'		\
+		-e 's/-gdwarf-4/-g3/'				\
+		-e 's/-Wa,--compress-debug-sections//'		\
+		-e 's/-fvar-tracking-assignments//'		\
+		-e 's/-frecord-gcc-switches//'			\
+		-e 's/-pipe//g'`
+OPT_FLAGS=`echo "$OPT_FLAGS" | sed -e 's/[[:blank:]]\+/ /g'`
 
 # FIXME debugedit
 [ ! -z "$TMP" ] && export TMP=`echo $TMP | sed -e 's|/$||'`
