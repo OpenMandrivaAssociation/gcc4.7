@@ -738,7 +738,9 @@ programs with the GNU Compiler Collection.
 %{gccdir}/f951
 %{gccdir}/finclude
 %{gccdir}/libcaf_single.a
+%{gccdir}/libcaf_single.la
 %{gccdir}/libgfortranbegin.a
+%{gccdir}/libgfortranbegin.la
 %if %{build_multilib}
 %{multigccdir}/libcaf_single.a
 %{multigccdir}/libgfortranbegin.a
