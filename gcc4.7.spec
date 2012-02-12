@@ -737,11 +737,11 @@ programs with the GNU Compiler Collection.
 %{_mandir}/man1/gfortran.1*
 %{gccdir}/f951
 %{gccdir}/finclude
-%{gccdir}/libcaf_single.a
-%{gccdir}/libgfortranbegin.a
+%{gccdir}/libcaf_single.*
+%{gccdir}/libgfortranbegin.*
 %if %{build_multilib}
-%{multigccdir}/libcaf_single.a
-%{multigccdir}/libgfortranbegin.a
+%{multigccdir}/libcaf_single.*
+%{multigccdir}/libgfortranbegin.*
 %endif
 %if %{build_doc}
 %doc %{_docdir}/gcc-gfortran
