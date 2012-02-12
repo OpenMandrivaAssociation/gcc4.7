@@ -14,7 +14,7 @@
 %if %{official}
   %define	snapshot		%{nil}
 %else
-  %define	snapshot		-20120204
+  %define	snapshot		-20120211
 %endif
 %define		system_compiler		1
 %define		branch			4.7
@@ -158,7 +158,7 @@
 #-----------------------------------------------------------------------
 Name:		%{name}
 Version:	4.7.0
-Release:	0.2
+Release:	0.3
 Summary:	GNU Compiler Collection
 License:	GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD
 Group:		Development/C
@@ -738,9 +738,7 @@ programs with the GNU Compiler Collection.
 %{gccdir}/f951
 %{gccdir}/finclude
 %{gccdir}/libcaf_single.a
-%{gccdir}/libcaf_single.la
 %{gccdir}/libgfortranbegin.a
-%{gccdir}/libgfortranbegin.la
 %if %{build_multilib}
 %{multigccdir}/libcaf_single.a
 %{multigccdir}/libgfortranbegin.a
@@ -1973,7 +1971,7 @@ XCFLAGS="$OPT_FLAGS"						\
 	--target=%{_target_platform}
 
 GCJFLAGS="$OPT_FLAGS"						\
-%make BOOT_CFLAGS="$OPT_FLAGS" $BOOTSTRAP
+make BOOT_CFLAGS="$OPT_FLAGS" $BOOTSTRAP
 
 %if %{build_pdf}
     %make pdf || :
