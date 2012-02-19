@@ -1971,8 +1971,7 @@ XCFLAGS="$OPT_FLAGS"						\
 	--target=%{_target_platform}
 
 GCJFLAGS="$OPT_FLAGS"						\
-#%#make BOOT_CFLAGS="$OPT_FLAGS" $BOOTSTRAP
-make BOOT_CFLAGS="$OPT_FLAGS" $BOOTSTRAP
+%make BOOT_CFLAGS="$OPT_FLAGS" $BOOTSTRAP
 
 %if %{build_pdf}
     %make pdf || :
