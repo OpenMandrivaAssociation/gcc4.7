@@ -1114,6 +1114,7 @@ Obsoletes:	gcj-tools <= 4.5.2
 Obsoletes:	%{mklibname gcj 11}
 Obsoletes:	%{mklibname gcj 11}-base
 %endif
+Obsoletes:	%{mklibname gcj 12}
 Requires(post): /sbin/install-info
 Requires(preun): /sbin/install-info
 Requires:	zip >= 2.1
@@ -1228,6 +1229,7 @@ Summary:	Java library sources
 Group:		Development/Java
 Requires:	%{libgcj} = %{version}-%{release}
 Provides:	libgcj-src = %{version}-%{release}
+Obsoletes:	libgcj12-src
 
 %description	-n libgcj%{gcj_major}-src
 The Java(tm) runtime library sources.
