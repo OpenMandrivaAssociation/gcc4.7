@@ -10,9 +10,9 @@
 %define		_disable_libtoolize		1
 
 #-----------------------------------------------------------------------
-%define		official		0
+%define		official		1
 %if %{official}
-  %define	snapshot		%{nil}
+  %define	snapshot		-RC-20120314
 %else
   %define	snapshot		-20120225
 %endif
@@ -158,7 +158,7 @@
 #-----------------------------------------------------------------------
 Name:		%{name}
 Version:	4.7.0
-Release:	0.5
+Release:	0.6
 Summary:	GNU Compiler Collection
 License:	GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD
 Group:		Development/C
@@ -166,7 +166,7 @@ URL:		http://gcc.gnu.org/
 # http://gcc.gnu.org/mirrors.html
 %if %{official}
   # <<mirror>>/releases/%{version}/
-Source0:	gcc-%{version}.tar.bz2
+Source0:	gcc-%{version}%{snapshot}.tar.bz2
 %else
   # <<mirror>>/snapshots/%{branch}%{snapshot}/
 Source0:	gcc-%{branch}%{snapshot}.tar.bz2
@@ -1124,7 +1124,7 @@ BuildRequires:	antlr
 BuildRequires:	gtk2-devel >= 2.4.0
 BuildRequires:	glib2-devel >= 2.4.0
 BuildRequires:	libart_lgpl-devel >= 2.1.0
-BuildRequires:	alsa-lib-devel
+BuildRequires:	pkgconfig(alsa)
 BuildRequires:	libxtst-devel
 BuildRequires:	libxt-devel
 BuildRequires:	spec-helper >= 0.31.10
