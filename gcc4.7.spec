@@ -12,7 +12,7 @@
 #-----------------------------------------------------------------------
 %define		official		1
 %if %{official}
-  %define	snapshot		-RC-20120314
+  %define	snapshot		%{nil}
 %else
   %define	snapshot		-20120225
 %endif
@@ -100,7 +100,7 @@
 %define		ssp_major		0
 %define		libssp			%mklibname ssp %{ssp_major}
 %define		libssp_devel		%mklibname -d ssp
-%define		libssp_static_devel 	%mklibname -d -s ssp
+%define		libssp_static_devel	%mklibname -d -s ssp
 %define		multilibssp		libssp%{ssp_major}
 
 #-----------------------------------------------------------------------
@@ -158,7 +158,7 @@
 #-----------------------------------------------------------------------
 Name:		%{name}
 Version:	4.7.0
-Release:	0.6
+Release:	1
 Summary:	GNU Compiler Collection
 License:	GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD
 Group:		Development/C
@@ -167,11 +167,12 @@ URL:		http://gcc.gnu.org/
 %if %{official}
   # <<mirror>>/releases/%{version}/
 Source0:	gcc-%{version}%{snapshot}.tar.bz2
+Source1:	gcc-%{version}%{snapshot}.tar.bz2.sig
 %else
   # <<mirror>>/snapshots/%{branch}%{snapshot}/
 Source0:	gcc-%{branch}%{snapshot}.tar.bz2
-%endif
 Source1:	md5.sum
+%endif
 Source4:	c89
 Source5:	c99
 %if %{with java_bootstrap}
@@ -1814,11 +1815,9 @@ to compile SSP support.
 %patch2 -p1
 %patch3 -p1
 
-%if 0
 echo %{vendor} > gcc/DEV-PHASE
 %if !%{official}
-    sed -i -e 's/4\.7\.0/%{version}/' gcc/BASE-VER
-%endif
+    sed -i -e 's/4\.7\..*/%{version}/' gcc/BASE-VER
 %endif
 
 %if %{with java_bootstrap}
