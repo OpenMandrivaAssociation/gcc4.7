@@ -574,15 +574,11 @@ Obsoletes:	libstdc++%{stdcxx_major}-static-devel
 Static libraries for the GNU standard C++ library.
 
 %files		-n %{libstdcxx_static_devel}
-%{_libdir}/libstdc++.a
-%{_libdir}/libstdc++.la
-%{_libdir}/libsupc++.a
-%{_libdir}/libsupc++.la
+%{_libdir}/libstdc++.*a
+%{_libdir}/libsupc++.*a
 %if %{build_multilib}
-%{multilibdir}/libstdc++.a
-%{multilibdir}/libstdc++.la
-%{multilibdir}/libsupc++.a
-%{multilibdir}/libsupc++.la
+%{multilibdir}/libstdc++.*a
+%{multilibdir}/libsupc++.*a
 %endif
 #-----------------------------------------------------------------------
 # build_cxx
@@ -828,11 +824,9 @@ This package contains Fortran 95 static library which is needed to
 compile Fortran 95 programs.
 
 %files		-n %{libgfortran_static_devel}
-%{_libdir}/libgfortran.a
-%{_libdir}/libgfortran.la
+%{_libdir}/libgfortran.*a
 %if %{build_multilib}
-%{multilibdir}/libgfortran.a
-%{multilibdir}/libgfortran.la
+%{multilibdir}/libgfortran.*a
 %endif
 #-----------------------------------------------------------------------
 # build fortran
@@ -943,11 +937,9 @@ Provides:	go-static-devel = %{version}-%{release}
 This package contains static Go libraries.
 
 %files		-n %{libgo_static_devel}
-%{_libdir}/libgo.a
-%{_libdir}/libgo.la
+%{_libdir}/libgo.*a
 %if %{build_multilib}
-%{multilibdir}/libgo.a
-%{multilibdir}/libgo.la
+%{multilibdir}/libgo.*a
 %endif
 #-----------------------------------------------------------------------
 # build go
@@ -1032,11 +1024,9 @@ Provides:	itm-static-devel = %{version}-%{release}
 This package contains GNU Transactional Memory static libraries.
 
 %files		-n %{libitm_static_devel}
-%{_libdir}/libitm.a
-%{_libdir}/libitm.la
+%{_libdir}/libitm.*a
 %if %{build_multilib}
-%{multilibdir}/libitm.a
-%{multilibdir}/libitm.la
+%{multilibdir}/libitm.*a
 %endif
 #-----------------------------------------------------------------------
 # build itm
@@ -1222,7 +1212,6 @@ package to compile your Java programs using the GCC Java compiler (gcj).
 %{_libdir}/libgcj*.spec
 %{_libdir}/libgcj*.so
 %{_libdir}/libgij.so
-%{_libdir}/gcj-%{version}-13/*.la
 
 #-----------------------------------------------------------------------
 %package	-n libgcj%{gcj_major}-src
@@ -1330,11 +1319,9 @@ Provides:	objc-static-devel = %{version}-%{release}
 This package contains static Objective-C libraries.
 
 %files		-n %{libobjc_static_devel}
-%{_libdir}/libobjc.a
-%{_libdir}/libobjc.la
+%{_libdir}/libobjc.*a
 %if %{build_multilib}
-%{multilibdir}/libobjc.a
-%{multilibdir}/libobjc.la
+%{multilibdir}/libobjc.*a
 %endif
 #-----------------------------------------------------------------------
 # build objc
@@ -1432,11 +1419,9 @@ This package contains GCC static libraries which are needed
 to compile FFI support.
 
 %files		-n %{libffi_static_devel}
-%{_libdir}/libffi.a
-%{_libdir}/libffi.la
+%{_libdir}/libffi.*a
 %if %{build_multilib}
-%{multilibdir}/libffi.a
-%{multilibdir}/libffi.la
+%{multilibdir}/libffi.*a
 %endif
 #-----------------------------------------------------------------------
 # package ffi
@@ -1521,11 +1506,9 @@ This package contains static libraries for building Fortran programs
 using REAL*16 and programs using __float128 math.
 
 %files		-n %{libquadmath_static_devel}
-%{_libdir}/libquadmath.a
-%{_libdir}/libquadmath.la
+%{_libdir}/libquadmath.*a
 %if %{build_multilib}
-%{multilibdir}/libquadmath.a
-%{multilibdir}/libquadmath.la
+%{multilibdir}/libquadmath.*a
 %endif
 #-----------------------------------------------------------------------
 # build quadmath
@@ -1613,11 +1596,9 @@ This package contains GCC static libraries which are needed
 to compile OpenMP v3.0 support.
 
 %files		-n %{libgomp_static_devel}
-%{_libdir}/libgomp.a
-%{_libdir}/libgomp.la
+%{_libdir}/libgomp.*a
 %if %{build_multilib}
-%{multilibdir}/libgomp.a
-%{multilibdir}/libgomp.la
+%{multilibdir}/libgomp.*a
 %endif
 #-----------------------------------------------------------------------
 # build gomp
@@ -1710,15 +1691,11 @@ This package contains GCC static libraries which are needed
 to compile mudflap support.
 
 %files		-n %{libmudflap_static_devel}
-%{_libdir}/libmudflap.a
-%{_libdir}/libmudflap.la
-%{_libdir}/libmudflapth.a
-%{_libdir}/libmudflapth.la
+%{_libdir}/libmudflap.*a
+%{_libdir}/libmudflapth.*a
 %if %{build_multilib}
-%{multilibdir}/libmudflap.a
-%{multilibdir}/libmudflap.la
-%{multilibdir}/libmudflapth.a
-%{multilibdir}/libmudflapth.la
+%{multilibdir}/libmudflap.*a
+%{multilibdir}/libmudflapth.*a
 %endif
 #-----------------------------------------------------------------------
 # build mudflap
@@ -1792,11 +1769,9 @@ This package contains GCC static libraries which are needed
 to compile SSP support.
 
 %files		-n %{libssp_static_devel}
-%{_libdir}/libssp.la
-%{_libdir}/libssp_nonshared.a
+%{_libdir}/libssp*.*a
 %if %{build_multilib}
-%{multilibdir}/libssp.la
-%{multilibdir}/libssp_nonshared.a
+%{multilibdir}/libssp*.*a
 %endif
 #-----------------------------------------------------------------------
 # build ssp
@@ -2018,6 +1993,7 @@ install -D -m644 test_summary.log %{buildroot}%{_docdir}/gcc/test_summary.log
 	JAR=$PWD/%{_target_platform}/libjava/scripts/jar	\
 	-C %{_target_platform}/libjava				\
 	install-src.zip
+    rm -f %{buildroot}%{_libdir}/gcj-%{version}-13/*.la
 %endif
 
 # configure python dir option does not cover libstdc++ and needs to remove
