@@ -2013,7 +2013,7 @@ pushd %{buildroot}%{_bindir}
 %if %{system_compiler}
     mkdir -p %{buildroot}/lib
     ln -sf %{_bindir}/cpp %{buildroot}/lib/cpp
-    cp -fa %{SOURCE4} %{SOURCE5} %{buildroot}%{_bindir}
+    install -m 0755 %{SOURCE4} %{SOURCE5} %{buildroot}%{_bindir}
     ln -sf %{_target_platform}-gcc-%{version} cc
 %else
     rm -f %{buildroot}%{_bindir}/cpp
