@@ -10,11 +10,11 @@
 %define		_disable_libtoolize		1
 
 #-----------------------------------------------------------------------
-%define		official		1
+%define		official		0
 %if %{official}
   %define	snapshot		%{nil}
 %else
-  %define	snapshot		-20120225
+  %define	snapshot		-20120407
 %endif
 %define		system_compiler		1
 %define		branch			4.7
