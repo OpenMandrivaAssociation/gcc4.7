@@ -14,7 +14,7 @@
 %if %{official}
   %define	snapshot		%{nil}
 %else
-  %define	snapshot		-20120407
+  %define	snapshot		-20120414
 %endif
 %define		system_compiler		1
 %define		branch			4.7
