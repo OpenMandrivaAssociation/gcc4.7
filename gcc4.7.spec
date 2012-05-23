@@ -1,3 +1,6 @@
+%define	_build_pkgcheck_set	/bin/true
+%define	_build_pkgcheck_srpm	/bin/true
+
 # functions with printf format attribute but with special parser and also
 # receiving non constant format strings
 %define		Werror_cflags			%{nil}
@@ -349,6 +352,7 @@ The %{libgcc} package contains GCC shared libraries for gcc %{branch}
 %package	-n %{multilibgcc}
 Summary:	GNU C library
 Group:		System/Libraries
+Conflicts:	%{libgcc} < 4.6.2-11
 
 %description	-n %{multilibgcc}
 The %{multilibgcc} package contains GCC shared libraries for gcc %{branch}
@@ -515,6 +519,7 @@ GCC Standard C++ Library.
 %package	-n %{multilibstdcxx}
 Summary:	GNU Standard C++ library
 Group:		System/Libraries
+Conflicts:	%{libstdcxx} < 4.6.2-11
 
 %description	-n %{multilibstdcxx}
 The libstdc++ package contains a rewritten standard compliant
@@ -640,6 +645,7 @@ libraries, which are required to run programs compiled with the GNAT.
 %package	-n %{multilibgnat}
 Summary:	GNU Ada 95 runtime libraries
 Group:		System/Libraries
+Conflicts:	%{libgnat} < 4.6.2-11
 
 %description	-n %{multilibgnat}
 GNAT is a GNU Ada 95 front-end to GCC. This package includes shared
@@ -775,6 +781,7 @@ Group:		System/Libraries
 %if %{build_quadmath}
 Requires:	%{multilibquadmath} = %{version}-%{release}
 %endif
+Conflicts:	%{libgfortran} < 4.6.2-11
 
 %description	-n %{multilibgfortran}
 This package contains Fortran 95 shared library which is needed to run
@@ -894,6 +901,7 @@ Go dynamically linked programs.
 %package	-n %{multilibgo}
 Summary:	Go runtime libraries
 Group:		System/Libraries
+Conflicts:	%{libgo} < 4.6.2-11
 
 %description	-n %{multilibgo}
 This package contains Go shared library which is needed to run
@@ -1275,6 +1283,7 @@ Provides:	libobjc = %{version}-%{release}
 Obsoletes:	libobjc3.0 < %{version}-%{release}
 Obsoletes:	libobjc3.1 < %{version}-%{release}
 %endif
+Conflicts:	%{libobjc} < 4.6.2-11
 
 %description	-n %{multilibobjc}
 This package contains Objective-C shared library which is needed to run
@@ -1365,6 +1374,7 @@ for FFI support.
 %package	-n %{multilibffi}
 Summary:	GCC support library for FFI
 Group:		System/Libraries
+Conflicts:	%{libffi} < 4.6.2-11
 
 %description	-n %{multilibffi}
 This package contains GCC shared support library which is needed
@@ -1448,6 +1458,7 @@ for __float128 math support and for Fortran REAL*16 support.
 %package	-n %{multilibquadmath}
 Summary:	GCC __float128 shared support library
 Group:		System/Libraries
+Conflicts:	%{libquadmath} < 4.6.2-11
 
 %description	-n %{multilibquadmath}
 This package contains GCC shared support library which is needed
@@ -1536,6 +1547,7 @@ for OpenMP v3.0 support.
 Summary:	GCC OpenMP v3.0 shared support library
 Group:		System/Libraries
 Provides:	libgomp = %{version}-%{release}
+Conflicts:	%{libgomp} < 4.6.2-11
 
 %description	-n %{multilibgomp}
 This package contains GCC shared library which is needed
@@ -1634,6 +1646,7 @@ programming errors.
 %package	-n %{multilibmudflap}
 Summary:	GCC mudflap shared support libraries
 Group:		System/Libraries
+Conflicts:	%{libmudflap} < 4.6.2-11
 
 %description	-n %{multilibmudflap}
 This package contains GCC shared libraries which are needed
@@ -1723,6 +1736,7 @@ for SSP support.
 Summary:	GCC SSP shared support library
 Group:		System/Libraries
 Provides:	libssp = %{version}-%{release}
+Conflicts:	%{libssp} < 4.6.2-11
 
 %description	-n %{multilibssp}
 This package contains GCC shared support library which is needed
