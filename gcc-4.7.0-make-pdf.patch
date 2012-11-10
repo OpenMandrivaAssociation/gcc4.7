@@ -1,0 +1,22 @@
+--- gcc-4.7-20120128/libiberty/copying-lib.texi.orig	2012-01-28 22:23:33.147605565 -0200
++++ gcc-4.7-20120128/libiberty/copying-lib.texi	2012-01-28 22:24:05.971754619 -0200
+@@ -476,9 +476,6 @@ decision will be guided by the two goals
+ of all derivatives of our free software and of promoting the sharing
+ and reuse of software generally.
+ 
+-@iftex
+-@heading NO WARRANTY
+-@end iftex
+ @ifinfo
+ @center NO WARRANTY
+ @end ifinfo
+@@ -507,9 +504,6 @@ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVI
+ DAMAGES.
+ @end enumerate
+ 
+-@iftex
+-@heading END OF TERMS AND CONDITIONS
+-@end iftex
+ @ifinfo
+ @center END OF TERMS AND CONDITIONS
+ @end ifinfo
