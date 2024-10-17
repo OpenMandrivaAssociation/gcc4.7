@@ -165,7 +165,7 @@ Release:	1
 Summary:	GNU Compiler Collection
 License:	GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD
 Group:		Development/C
-URL:		http://gcc.gnu.org/
+URL:		https://gcc.gnu.org/
 # http://gcc.gnu.org/mirrors.html
 %if %{official}
   # <<mirror>>/releases/%{version}/
