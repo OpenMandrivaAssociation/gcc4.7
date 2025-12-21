@@ -195,6 +195,11 @@ Conflicts:	manbo-mandriva-files-gcc4.2
 # find-provides fail to provide devel(libgcc_s) because it is a linker script
 Provides:	devel(libgcc_s)
 %endif
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	binutils >= 2.20.51.0.2
 Requires:	binutils >= 2.20.51.0.2
 BuildRequires:	elfutils-devel >= 0.147
